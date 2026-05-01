@@ -349,7 +349,7 @@ if [[ $(/usr/bin/arch) == "arm64" ]]; then
     fi
 fi
 VERSION="10.9beta"
-VERSIONDATE="2025-12-23"
+VERSIONDATE="2026-04-29"
 
 # MARK: Functions
 
@@ -981,9 +981,9 @@ installFromPKG() {
     spctlStatus=$(echo $?)
     printlog "spctlOut is $spctlOut" DEBUG
 
-    teamID=$(echo $spctlOut | awk -F '(' '/origin=/ {print $2 }' | tr -d '()' )
-    # Apple signed software has no teamID, grab entire origin instead
-    if [[ -z $teamID ]]; then
+    teamID=$(echo $spctlOut | awk -F '(' '/origin=/ {print $NF }' | tr -d '()' )
+    # Apple signed software has no teamID, grab entire text after origin= instead
+    if [[ -z $teamID ]] || [[ $teamID == "origin="* ]]; then
         teamID=$(echo $spctlOut | awk -F '=' '/origin=/ {print $NF }')
     fi
 
@@ -7973,6 +7973,18 @@ nessusagent)
     appCustomVersion() { /Library/NessusAgent/run/bin/nasl -v | grep Agent | cut -d' ' -f3 }
     appNewVersion=$(curl -I -s  'https://www.tenable.com/downloads/api/v2/pages/nessus-agents/files/NessusAgent-latest.dmg' | grep 'filename=' | cut -d- -f3 | cut -f 1-3 -d '.')
     expectedTeamID="4B8J598M7U"
+    ;;
+netbird)
+    name="NetBird"
+    type="pkg"
+    if [[ $(arch) == "arm64" ]]; then
+        dURL="https://pkgs.netbird.io/macos/arm64"
+    elif [[ $(arch) == "i386" ]]; then
+        dURL="https://pkgs.netbird.io/macos/amd64"
+    fi
+    downloadURL=$dURL
+    appNewVersion=$(curl -LsI $downloadURL -o /dev/null -w '%{url_effective}' | grep -oE "\d+\.\d+\.\d+")
+    expectedTeamID="TA739QLA7A"
     ;;
 netiquette)
     name="Netiquette"
