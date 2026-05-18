@@ -114,7 +114,7 @@ IGNORE_APP_STORE_APPS=no
 #                  Known bad example: Slack will lose all settings.
 
 # Owner of copied apps
-SYSTEMOWNER=0
+SYSTEMOWNER=1
 # options:
 #  - 0             Current user will be owner of copied apps, just like if they
 #                  installed it themselves (default).
@@ -9541,6 +9541,13 @@ protondrive)
     downloadURL="https://proton.me/download/drive/macos/$appNewVersion/ProtonDrive-$appNewVersion.dmg"
     expectedTeamID="2SB5Z68H26"
     ;;
+protonpass)
+  name="Proton Pass"
+  type="dmg"
+  downloadURL=$(getJSONValue "$(curl -fsL 'https://proton.me/download/PassDesktop/darwin/universal/version.json')" 'Releases[0].File[0].Url')
+  appNewVersion=$( grep -oE '\d+\.[0-9.]*\d' <<< $downloadURL )
+  expectedTeamID="2SB5Z68H26"
+  ;;
 protonvpn)
     name="ProtonVPN"
     type="dmg"
