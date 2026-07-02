@@ -20,6 +20,14 @@ label="" # if no label is sent to the script, this will be used
 
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 
+# Watchdog: terminate the script if it runs for too long
+WATCHDOG_TIMEOUT=500
+
+( sleep "$WATCHDOG_TIMEOUT" && kill -9 "$$" 2>/dev/null ) &
+WATCHDOG_PID=$!
+
+trap 'kill "$WATCHDOG_PID" 2>/dev/null' EXIT
+
 # NOTE: adjust these variables:
 
 # set to 0 for production, 1 or 2 for debugging
@@ -349,7 +357,7 @@ if [[ $(/usr/bin/arch) == "arm64" ]]; then
     fi
 fi
 VERSION="10.9beta"
-VERSIONDATE="2026-05-19"
+VERSIONDATE="2026-07-02"
 
 # MARK: Functions
 
